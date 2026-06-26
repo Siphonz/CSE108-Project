@@ -1,0 +1,29 @@
+<!-- Shows saved quiz attempts for the currently logged-in user -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ current_user.username }}'s Profile</h1>
+
+<div class="card">
+    <h2>Quiz History</h2>
+
+    {% if attempts %}
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>Score</th>
+                <th>Date</th>
+            </tr>
+            {% for attempt in attempts %}
+                <tr>
+                    <td>{{ attempt.category.name }}</td>
+                    <td>{{ attempt.score }}</td>
+                    <td>{{ attempt.completed_at.strftime("%m/%d/%Y") }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>You have not played a quiz yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

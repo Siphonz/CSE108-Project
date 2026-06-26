@@ -1,0 +1,16 @@
+<!-- Shows all categories from the database -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Choose a Category</h1>
+<p>Every quiz has five random questions.</p>
+
+<div class="category-grid">
+    {% for category in categories %}
+        <div class="card">
+            <h2>{{ category.name }}</h2>
+            <a class="button" href="{{ url_for('start_quiz', category_id=category.id) }}">Start Quiz</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

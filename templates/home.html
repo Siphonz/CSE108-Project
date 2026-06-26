@@ -1,0 +1,26 @@
+<!-- Main page -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>TriviaVerse</h1>
+    <p>Mixed pop culture trivia for anime, gaming, movies, music, and internet culture.</p>
+
+    {% if current_user.is_authenticated %}
+        <a class="button" href="{{ url_for('categories') }}">Start Playing</a>
+    {% else %}
+        <a class="button" href="{{ url_for('register') }}">Create Account</a>
+        <a class="button secondary" href="{{ url_for('login') }}">Login</a>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>How it works</h2>
+    <ol>
+        <li>Choose a category.</li>
+        <li>Answer five questions.</li>
+        <li>Get 100 points for each correct answer, Bonus points if you answer quicker.</li>
+        <li>Save your score to the leaderboard.</li>
+    </ol>
+</div>
+{% endblock %}

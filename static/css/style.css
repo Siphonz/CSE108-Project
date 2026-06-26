@@ -1,0 +1,190 @@
+/* Placeholder CSS Styling, probably changing later */
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #222;
+    margin: 0;
+}
+
+/* Top navigation bar */
+nav {
+    background: #2d2a4a;
+    padding: 15px;
+}
+
+nav a {
+    color: white;
+    margin-right: 16px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+main {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+/* Main white content boxes used across multiple pages */
+.hero,
+.card,
+.form-card,
+.quiz-card {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px #cccccc;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px 25px;
+}
+
+/* Reusable purple button style */
+.button {
+    display: inline-block;
+    background: #5c54d6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 14px;
+    margin: 5px 4px 5px 0;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: #443cae;
+}
+
+.secondary {
+    background: #777;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.form-card {
+    max-width: 450px;
+    margin: 40px auto;
+}
+
+label,
+input {
+    display: block;
+    width: 100%;
+}
+
+label {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+input {
+    box-sizing: border-box;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+}
+
+.form-card /* Reusable purple button style */
+.button {
+    margin-top: 20px;
+}
+
+/* Large answer buttons on the quiz page */
+.answer {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 14px;
+    margin-top: 10px;
+    background: #eeeeff;
+    border: 1px solid #c3c0f4;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.answer:hover {
+    background: #ddd9ff;
+}
+
+.message {
+    background: #ffe9e9;
+    color: #8c2222;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Tables used by profile, leaderboard, and admin pages */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #eeeeff;
+}
+
+.center {
+    text-align: center;
+}
+
+/* Admin page styles */
+select,
+textarea {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+}
+
+.admin-form {
+    max-width: 650px;
+}
+
+.small-button {
+    display: inline-block;
+    background: #5c54d6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 7px 10px;
+    margin: 2px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delete-form {
+    display: inline;
+}
+
+.delete-button {
+    background: #b83b4d;
+}
+
+.delete-button:hover {
+    background: #942b3a;
+}

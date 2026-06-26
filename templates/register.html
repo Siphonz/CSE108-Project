@@ -1,0 +1,17 @@
+<!-- Registration form -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Register</h1>
+    <form method="POST">
+        <label>Username</label>
+        <input name="username" required>
+
+        <label>Password</label>
+        <input name="password" type="password" required>
+
+        <button class="button" type="submit">Create Account</button>
+    </form>
+</div>
+{% endblock %}

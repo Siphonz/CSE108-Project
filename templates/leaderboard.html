@@ -1,0 +1,29 @@
+<!-- Shows the top quiz scores saved in the database. -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Leaderboard</h1>
+
+<div class="card">
+    {% if attempts %}
+        <table>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Category</th>
+                <th>Score</th>
+            </tr>
+            {% for attempt in attempts %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ attempt.user.username }}</td>
+                    <td>{{ attempt.category.name }}</td>
+                    <td>{{ attempt.score }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No scores have been saved yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+<!-- The same form is used for adding a question and editing a question. -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-card admin-form">
+    {% if question %}
+        <h1>Edit Question</h1>
+        <p>Change any question or answer below, then click Save Changes.</p>
+    {% else %}
+        <h1>Add New Question</h1>
+        <p>Fill in all four answer choices and select the correct letter.</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="category_id">Category</label>
+        <select id="category_id" name="category_id" required>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if question and question.category_id == category.id %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="question_text">Question</label>
+        <textarea id="question_text" name="question_text" rows="4" required>{% if question %}{{ question.question_text }}{% endif %}</textarea>
+
+        <label for="option_a">Answer A</label>
+        <input id="option_a" name="option_a" value="{% if question %}{{ question.option_a }}{% endif %}" required>
+
+        <label for="option_b">Answer B</label>
+        <input id="option_b" name="option_b" value="{% if question %}{{ question.option_b }}{% endif %}" required>
+
+        <label for="option_c">Answer C</label>
+        <input id="option_c" name="option_c" value="{% if question %}{{ question.option_c }}{% endif %}" required>
+
+        <label for="option_d">Answer D</label>
+        <input id="option_d" name="option_d" value="{% if question %}{{ question.option_d }}{% endif %}" required>
+
+        <label for="correct_answer">Correct Answer</label>
+        <select id="correct_answer" name="correct_answer" required>
+            {% for letter in ["A", "B", "C", "D"] %}
+                <option value="{{ letter }}" {% if question and question.correct_answer == letter %}selected{% endif %}>
+                    {{ letter }}
+                </option>
+            {% endfor %}
+        </select>
+
+        {% if question %}
+            <button class="button" type="submit">Save Changes</button>
+        {% else %}
+            <button class="button" type="submit">Add Question</button>
+        {% endif %}
+        <a class="button secondary" href="{{ url_for('admin_questions') }}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

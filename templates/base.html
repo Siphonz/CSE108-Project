@@ -1,0 +1,38 @@
+<!-- Base page shared by every template -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TriviaVerse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('home') }}">TriviaVerse</a>
+        <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('categories') }}">Play</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+
+            {% if current_user.is_admin %}
+                <a href="{{ url_for('admin_questions') }}">Admin Questions</a>
+            {% endif %}
+
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </nav>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
