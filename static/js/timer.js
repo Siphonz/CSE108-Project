@@ -5,6 +5,10 @@ const timerText = document.getElementById("timer");
 const quizForm = document.getElementById("quiz-form");
 const secondsLeftInput = document.getElementById("seconds-left");
 
+const selectedAnswerInput = document.getElementById("selected-answer");
+const correctSound = document.getElementById("correctSFX");
+const wrongSound = document.getElementById("incorrectSFX");
+
 //Run a second down each second
 const timer = setInterval(function () {
     timeLeft = timeLeft - 1;
@@ -22,10 +26,36 @@ const timer = setInterval(function () {
     }
 }, 1000);
 
-//Stop the countdown when the player clicks an answer button
-quizForm.addEventListener("submit", function () {
-    clearInterval(timer);
+quizForm.addEventListener("submit", function (e) {
 
-    //Makes sure we get the most recent number of seconds left
+    // Don't delay automatic timeout submission.
+    if (!e.submitter) {
+        clearInterval(timer);
+        secondsLeftInput.value = 0;
+        return;
+    }
+
+    e.preventDefault();
+
+    clearInterval(timer);
     secondsLeftInput.value = Math.max(0, timeLeft);
+
+    selectedAnswerInput.value = e.submitter.value;
+
+    document.querySelectorAll(".answer").forEach(button => {
+        button.disabled = true;
+    });
+
+    const chosenAnswer = e.submitter.value;
+    const correctAnswer = quizForm.dataset.correct;
+
+    if (chosenAnswer === correctAnswer) {
+        correctSound.play();
+    } else {
+        wrongSound.play();
+    }
+
+    setTimeout(() => {
+        quizForm.submit();
+    }, 1000);
 });
