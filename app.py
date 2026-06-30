@@ -5,6 +5,7 @@ from random import sample
 
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+from sqlalchemy import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Import the database tables from models.py.
@@ -17,6 +18,8 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "change-this-before-deployment"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trivia.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+DIFFICULTY_LEVELS = ["easy", "medium", "hard"]
 
 db.init_app(app)
 
@@ -130,19 +133,24 @@ def logout():
 @login_required
 def categories():
     all_categories = Category.query.order_by(Category.name).all()
-    return render_template("categories.html", categories=all_categories)
+    return render_template("categories.html", categories=all_categories, difficulties=DIFFICULTY_LEVELS)
 
 
-#Starts a new quiz from one category
-@app.route("/start/<int:category_id>")
+#Starts a new quiz from one category and one difficulty
+@app.route("/start/<int:category_id>/<difficulty>")
 @login_required
-def start_quiz(category_id):
+def start_quiz(category_id, difficulty):
+    difficulty = difficulty.lower().strip()
+    if difficulty not in DIFFICULTY_LEVELS:
+        flash("Please choose a valid difficulty.")
+        return redirect(url_for("categories"))
+
     category = db.session.get(Category, category_id)
-    questions = Question.query.filter_by(category_id=category_id).all()
+    questions = Question.query.filter_by(category_id=category_id, difficulty=difficulty).all()
 
     # The quiz needs at least five questions to work
     if not category or len(questions) < 5:
-        flash("This category does not have enough questions.")
+        flash(f"This category does not have enough {difficulty.title()} questions.")
         return redirect(url_for("categories"))
 
     # Choose five random questions from this category
@@ -153,6 +161,7 @@ def start_quiz(category_id):
     session["question_index"] = 0
     session["quiz_score"] = 0
     session["category_id"] = category.id
+    session["difficulty"] = difficulty
 
     return redirect(url_for("quiz"))
 
@@ -175,11 +184,13 @@ def quiz():
     #Get the current question and category from db
     question = db.session.get(Question, question_ids[question_index])
     category = db.session.get(Category, session["category_id"])
+    difficulty = session.get("difficulty", "easy")
 
     return render_template(
         "quiz.html",
         question=question,
         category=category,
+        difficulty=difficulty,
         question_number=question_index + 1,
         score=session["quiz_score"],
     )
@@ -228,6 +239,7 @@ def answer():
 def finish_quiz():
     category_id = session.get("category_id")
     score = session.get("quiz_score")
+    difficulty = session.get("difficulty", "easy")
 
     if category_id is None or score is None:
         return redirect(url_for("categories"))
@@ -243,7 +255,7 @@ def finish_quiz():
 
     category = db.session.get(Category, category_id)
     clear_quiz_session()
-    return render_template("results.html", score=score, category=category)
+    return render_template("results.html", score=score, category=category, difficulty=difficulty)
 
 
 #Show past quiz scores for the logged-in player
@@ -267,7 +279,7 @@ def leaderboard():
 @app.route("/admin")
 @admin_required
 def admin_questions():
-    all_questions = Question.query.order_by(Question.category_id, Question.id).all()
+    all_questions = Question.query.order_by(Question.category_id, Question.difficulty, Question.id).all()
     all_categories = Category.query.order_by(Category.name).all()
     return render_template(
         "admin_questions.html",
@@ -286,7 +298,7 @@ def admin_add_question():
         new_question = get_question_from_form()
 
         if new_question is None:
-            flash("Please fill in every question field and choose A, B, C, or D.")
+            flash("Please fill in every question field, choose a difficulty, and choose A, B, C, or D.")
         else:
             db.session.add(new_question)
             db.session.commit()
@@ -311,7 +323,7 @@ def admin_edit_question(question_id):
         updated_question = get_question_from_form()
 
         if updated_question is None:
-            flash("Please fill in every question field and choose A, B, C, or D.")
+            flash("Please fill in every question field, choose a difficulty, and choose A, B, C, or D.")
         else:
             # Copy the new values into the existing database row.
             question.category_id = updated_question.category_id
@@ -321,6 +333,7 @@ def admin_edit_question(question_id):
             question.option_c = updated_question.option_c
             question.option_d = updated_question.option_d
             question.correct_answer = updated_question.correct_answer
+            question.difficulty = updated_question.difficulty
             db.session.commit()
             flash("Question updated.")
             return redirect(url_for("admin_questions"))
@@ -346,6 +359,7 @@ def get_question_from_form():
     #Read the add/edit question form
     #Return a Question object when valid, otherwise return None
     category_id = request.form.get("category_id", "")
+    difficulty = request.form.get("difficulty", "").lower().strip()
     question_text = request.form.get("question_text", "").strip()
     option_a = request.form.get("option_a", "").strip()
     option_b = request.form.get("option_b", "").strip()
@@ -356,6 +370,7 @@ def get_question_from_form():
     #Make sure each required field has a value
     if (
         not category_id
+        or difficulty not in DIFFICULTY_LEVELS
         or not question_text
         or not option_a
         or not option_b
@@ -367,6 +382,7 @@ def get_question_from_form():
 
     return Question(
         category_id=int(category_id),
+        difficulty=difficulty,
         question_text=question_text,
         option_a=option_a,
         option_b=option_b,
@@ -382,6 +398,19 @@ def clear_quiz_session():
     session.pop("question_index", None)
     session.pop("quiz_score", None)
     session.pop("category_id", None)
+    session.pop("difficulty", None)
+
+
+def ensure_question_difficulty_column():
+    # Add the difficulty column for older databases created before this feature.
+    table_info = db.session.execute(text("PRAGMA table_info(question)")).fetchall()
+    column_names = [column[1] for column in table_info]
+
+    if "difficulty" not in column_names:
+        db.session.execute(
+            text("ALTER TABLE question ADD COLUMN difficulty TEXT NOT NULL DEFAULT 'easy'")
+        )
+        db.session.commit()
 
 
 def create_admin_account():
@@ -400,6 +429,7 @@ def create_admin_account():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+        ensure_question_difficulty_column()
         add_sample_data()
         create_admin_account()
     app.run(debug=True)

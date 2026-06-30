@@ -71,6 +71,10 @@ main {
     gap: 15px;
 }
 
+.difficulty-buttons {
+    margin-top: 12px;
+}
+
 .form-card {
     max-width: 450px;
     margin: 40px auto;

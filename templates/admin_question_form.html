@@ -21,6 +21,15 @@
             {% endfor %}
         </select>
 
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty" name="difficulty" required>
+            {% for level in ["easy", "medium", "hard"] %}
+                <option value="{{ level }}" {% if question and question.difficulty == level %}selected{% endif %}>
+                    {{ level.title() }}
+                </option>
+            {% endfor %}
+        </select>
+
         <label for="question_text">Question</label>
         <textarea id="question_text" name="question_text" rows="4" required>{% if question %}{{ question.question_text }}{% endif %}</textarea>
 

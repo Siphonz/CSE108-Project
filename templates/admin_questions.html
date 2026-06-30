@@ -14,6 +14,7 @@
         <table>
             <tr>
                 <th>Category</th>
+                <th>Difficulty</th>
                 <th>Question</th>
                 <th>Correct Answer</th>
                 <th>Actions</th>
@@ -21,6 +22,7 @@
             {% for question in questions %}
                 <tr>
                     <td>{{ question.category.name }}</td>
+                    <td>{{ question.difficulty.title() }}</td>
                     <td>{{ question.question_text }}</td>
                     <td>{{ question.correct_answer }}</td>
                     <td>

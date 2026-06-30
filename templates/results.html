@@ -6,8 +6,9 @@
     <h1>Quiz Complete!</h1>
     <h2>Your Score: {{ score }}</h2>
     <p>Category: {{ category.name }}</p>
+    <p>Difficulty: {{ difficulty.title() }}</p>
 
-    <a class="button" href="{{ url_for('start_quiz', category_id=category.id) }}">Play Again</a>
+    <a class="button" href="{{ url_for('start_quiz', category_id=category.id, difficulty=difficulty) }}">Play Again</a>
     <a class="button secondary" href="{{ url_for('leaderboard') }}">Leaderboard</a>
 </div>
 {% endblock %}

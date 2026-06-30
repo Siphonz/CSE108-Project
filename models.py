@@ -29,6 +29,7 @@ class Question(db.Model):
 
     #The question itself and its four answer choices.
     question_text = db.Column(db.String(300), nullable=False)
+    difficulty = db.Column(db.String(10), nullable=False, default="easy")
     option_a = db.Column(db.String(150), nullable=False)
     option_b = db.Column(db.String(150), nullable=False)
     option_c = db.Column(db.String(150), nullable=False)

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="quiz-card">
-    <p><strong>{{ category.name }}</strong> | Question {{ question_number }} of 5 | Score: {{ score }}</p>
+    <p><strong>{{ category.name }}</strong> | {{ difficulty.title() }} | Question {{ question_number }} of 5 | Score: {{ score }}</p>
     <p>Time left: <strong id="timer">15</strong> seconds</p>
 
     <h1>{{ question.question_text }}</h1>
