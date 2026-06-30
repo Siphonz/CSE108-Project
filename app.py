@@ -139,6 +139,23 @@ def logout():
     clear_quiz_session()
     return redirect(url_for("home"))
 
+# Upload or delete a profile picture for the current user
+@app.route("/profile-picture", methods=["POST"])
+@login_required
+def profile_picture():
+    if "upload" in request.form:
+        file = request.files.get("profile_pic")
+        if not file or file.filename == "":
+            flash("No file selected.")
+            return redirect(url_for("profile"))
+
+        app_utils.validate_save_pfp(file.stream, str(current_user.id))
+        flash("Profile picture uploaded.")
+    elif "delete" in request.form:
+        app_utils.delete_pfp(str(current_user.id))
+        flash("Profile picture deleted.")
+    return redirect(url_for("profile"))
+
 
 #Show trivia categories
 @app.route("/categories")

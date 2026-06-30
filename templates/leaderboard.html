@@ -36,7 +36,9 @@
             {% for attempt in attempts %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td><a class="profile-link" href="{{ url_for('public_profile', username=attempt.user.username) }}">{{ attempt.user.username }}</a></td>
+                    <td><a class="profile-link profile-name" href="{{ url_for('public_profile', username=attempt.user.username) }}">
+                        <img class="profile-picture small" src="{{ url_for('static', filename='pfps/' + (attempt.user.id|string) + '.png') }}" onerror="this.src='/static/pfps/default.png'">{{ attempt.user.username }}
+                    </a></td>
                     <td>{{ attempt.category.name }}</td>
                     <td>{{ attempt.score }}</td>
                     <td title="{{ attempt.completed_at.strftime('%m/%d/%Y %I:%M %p') }}">{{ attempt.completed_at | time_ago }}</td>

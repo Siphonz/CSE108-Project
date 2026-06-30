@@ -1,4 +1,7 @@
 from datetime import datetime
+from PIL import Image
+from pathlib import Path
+from os import path
 
 def time_ago(dt):
     diff = datetime.utcnow() - dt
@@ -22,3 +25,24 @@ def time_ago(dt):
         return "1 hour ago"
     else:
         return f"{sec // 3600} hours ago"
+
+def validate_save_pfp(stream, filename, max_res=(512, 512)):
+    # Do not allow path traversal
+    if ".." in filename or "/" in filename or "\\" in filename:
+        raise ValueError("Invalid filename")
+
+    img = Image.open(stream)
+    # Convert to png
+    img = img.convert("RGBA")
+
+    img.thumbnail(max_res)
+    img.save(f"static/pfps/{filename}.png", "PNG")
+
+def delete_pfp(filename):
+    # Do not allow path traversal
+    if ".." in filename or "/" in filename or "\\" in filename:
+        raise ValueError("Invalid filename")
+
+    file_path = Path(f"static/pfps/{filename}.png")
+    if file_path.exists():
+        file_path.unlink()
