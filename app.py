@@ -6,6 +6,7 @@ from random import sample
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
+import app_utils
 
 # Import the database tables from models.py.
 from models import db, User, Category, Question, Attempt
@@ -35,6 +36,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+# datetime -> 3 hours ago
+@app.template_filter("time_ago")
+def time_ago_filter(dt):
+    return app_utils.time_ago(dt)
 
 @login_manager.user_loader
 def load_user(user_id):

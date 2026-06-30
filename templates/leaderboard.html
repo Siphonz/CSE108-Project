@@ -31,6 +31,7 @@
                 <th>Player</th>
                 <th>Category</th>
                 <th>Score</th>
+                <th>Date</th>
             </tr>
             {% for attempt in attempts %}
                 <tr>
@@ -38,6 +39,7 @@
                     <td><a class="profile-link" href="{{ url_for('public_profile', username=attempt.user.username) }}">{{ attempt.user.username }}</a></td>
                     <td>{{ attempt.category.name }}</td>
                     <td>{{ attempt.score }}</td>
+                    <td title="{{ attempt.completed_at.strftime('%m/%d/%Y %I:%M %p') }}">{{ attempt.completed_at | time_ago }}</td>
                 </tr>
             {% endfor %}
         </table>
