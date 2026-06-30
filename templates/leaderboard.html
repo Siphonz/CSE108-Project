@@ -5,6 +5,25 @@
 <h1>Leaderboard</h1>
 
 <div class="card">
+    <form method="GET" class="leaderboard-filter">
+        <label for="category_id">Choose a category</label>
+        <select id="category_id" name="category_id">
+            <option value="">Overall Leaderboard</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if selected_category_id == category.id %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button class="button" type="submit">Show Scores</button>
+    </form>
+
+    {% if selected_category %}
+        <h2>{{ selected_category.name }} Leaderboard</h2>
+    {% else %}
+        <h2>Overall Leaderboard</h2>
+    {% endif %}
+
     {% if attempts %}
         <table>
             <tr>
@@ -16,7 +35,7 @@
             {% for attempt in attempts %}
                 <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ attempt.user.username }}</td>
+                    <td><a class="profile-link" href="{{ url_for('public_profile', username=attempt.user.username) }}">{{ attempt.user.username }}</a></td>
                     <td>{{ attempt.category.name }}</td>
                     <td>{{ attempt.score }}</td>
                 </tr>

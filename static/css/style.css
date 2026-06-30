@@ -1,29 +1,74 @@
-/* Placeholder CSS Styling, probably changing later */
+/* Main styling shared by the project pages. */
+
+:root {
+    --purple: #5c54d6;
+    --purple-dark: #443cae;
+    --navy: #25233f;
+    --text: #28263a;
+    --muted: #6a687d;
+    --page: #f5f4fb;
+    --card: #ffffff;
+    --border: #e4e2f1;
+}
+
+* {
+    box-sizing: border-box;
+}
 
 body {
     font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    color: #222;
+    background: linear-gradient(180deg, #efedff 0, var(--page) 280px);
+    color: var(--text);
     margin: 0;
+    min-height: 100vh;
 }
 
 /* Top navigation bar */
 nav {
-    background: #2d2a4a;
-    padding: 15px;
+    background: linear-gradient(120deg, #292547, #3e3782);
+    box-shadow: 0 2px 12px rgba(37, 35, 63, 0.18);
+}
+
+.nav-content {
+    max-width: 1040px;
+    margin: 0 auto;
+    min-height: 64px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
 }
 
 nav a {
-    color: white;
-    margin-right: 16px;
+    color: #f9f8ff;
+    padding: 8px 10px;
     text-decoration: none;
     font-weight: bold;
+    border-radius: 6px;
+}
+
+nav a:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+nav .brand {
+    font-size: 20px;
+    letter-spacing: 0.3px;
+    padding-left: 0;
 }
 
 main {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 0 20px;
+    max-width: 1040px;
+    margin: 34px auto;
+    padding: 0 20px 34px;
 }
 
 /* Main white content boxes used across multiple pages */
@@ -31,48 +76,170 @@ main {
 .card,
 .form-card,
 .quiz-card {
-    background: white;
-    border-radius: 8px;
+    background: var(--card);
+    border: 1px solid rgba(228, 226, 241, 0.9);
+    border-radius: 14px;
     padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px #cccccc;
+    box-shadow: 0 8px 22px rgba(49, 43, 89, 0.09);
 }
 
 .hero {
     text-align: center;
-    padding: 50px 25px;
+    padding: 58px 28px;
+    background: linear-gradient(135deg, #ffffff, #f0efff);
+}
+
+.hero h1 {
+    font-size: clamp(34px, 6vw, 52px);
+    margin: 0 0 12px;
+    color: #312c68;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 18px;
+    max-width: 650px;
+    margin: 0 auto 16px;
+}
+
+.hero-tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 20px 0;
+}
+
+.hero-tags span {
+    background: #e8e6ff;
+    border-radius: 999px;
+    color: #4b448f;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 7px 11px;
+}
+
+.page-heading {
+    margin-bottom: 24px;
+}
+
+.page-heading h1 {
+    margin: 0 0 8px;
+    font-size: 34px;
+}
+
+.page-heading p {
+    color: var(--muted);
+    margin: 0;
+}
+
+.eyebrow {
+    color: var(--purple);
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
 }
 
 /* Reusable purple button style */
 .button {
     display: inline-block;
-    background: #5c54d6;
+    background: var(--purple);
     color: white;
     border: none;
-    border-radius: 5px;
-    padding: 10px 14px;
+    border-radius: 8px;
+    padding: 11px 15px;
     margin: 5px 4px 5px 0;
     text-decoration: none;
     font-size: 16px;
+    font-weight: bold;
     cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .button:hover {
-    background: #443cae;
+    background: var(--purple-dark);
+    transform: translateY(-1px);
 }
 
 .secondary {
-    background: #777;
+    background: #6d6a79;
+}
+
+.secondary:hover {
+    background: #555261;
 }
 
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+}
+
+.category-card {
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0;
+    transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 13px 27px rgba(49, 43, 89, 0.14);
+}
+
+.category-card h2 {
+    margin: 10px 0 8px;
+}
+
+.category-card p {
+    color: var(--muted);
+    line-height: 1.45;
+    margin: 0 0 18px;
+}
+
+.category-card .button {
+    margin-top: auto;
+}
+
+.category-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+    border-radius: 12px;
+    background: #ecebff;
+}
+
+.random-card {
+    background: linear-gradient(135deg, #41378b, #685de0);
+    border-color: #41378b;
+    color: white;
+}
+
+.random-card p {
+    color: #f1f0ff;
+}
+
+.random-card .category-icon {
+    background: rgba(255, 255, 255, 0.19);
+}
+
+.random-card .button {
+    background: white;
+    color: #4b448f;
+}
+
+.random-card .button:hover {
+    background: #f0efff;
 }
 
 .form-card {
-    max-width: 450px;
+    max-width: 480px;
     margin: 40px auto;
 }
 
@@ -87,59 +254,88 @@ label {
     font-weight: bold;
 }
 
-input {
+input,
+select,
+textarea {
     box-sizing: border-box;
+    width: 100%;
     padding: 10px;
     margin-top: 5px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
+    border: 1px solid #cfcddd;
+    border-radius: 7px;
+    background: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
 }
 
-.form-card /* Reusable purple button style */
-.button {
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #b9b4ff;
+    border-color: var(--purple);
+}
+
+.form-card .button {
     margin-top: 20px;
 }
 
 /* Large answer buttons on the quiz page */
+.quiz-card {
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .answer {
     display: block;
     width: 100%;
     text-align: left;
-    padding: 14px;
-    margin-top: 10px;
-    background: #eeeeff;
-    border: 1px solid #c3c0f4;
-    border-radius: 5px;
+    padding: 15px;
+    margin-top: 11px;
+    background: #f5f4ff;
+    border: 1px solid #d4d0fa;
+    border-radius: 8px;
+    color: var(--text);
     font-size: 16px;
     cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .answer:hover {
-    background: #ddd9ff;
+    background: #e7e4ff;
+    transform: translateX(3px);
 }
 
 .message {
-    background: #ffe9e9;
-    color: #8c2222;
-    padding: 10px;
-    border-radius: 5px;
+    background: #fff2d9;
+    border-left: 4px solid #e4a837;
+    color: #6d4b10;
+    padding: 12px;
+    border-radius: 7px;
 }
 
 /* Tables used by profile, leaderboard, and admin pages */
 table {
     width: 100%;
     border-collapse: collapse;
+    overflow: hidden;
+    border-radius: 8px;
 }
 
 th,
 td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    padding: 11px;
     text-align: left;
 }
 
 th {
-    background: #eeeeff;
+    background: #eeecff;
+    color: #3d376f;
+}
+
+tr:last-child td {
+    border-bottom: none;
 }
 
 .center {
@@ -147,29 +343,16 @@ th {
 }
 
 /* Admin page styles */
-select,
-textarea {
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-}
-
 .admin-form {
     max-width: 650px;
 }
 
 .small-button {
     display: inline-block;
-    background: #5c54d6;
+    background: var(--purple);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 7px 10px;
     margin: 2px;
     text-decoration: none;
@@ -187,4 +370,89 @@ textarea {
 
 .delete-button:hover {
     background: #942b3a;
+}
+
+/* Answer feedback page */
+.correct-text {
+    color: #267a3b;
+}
+
+.incorrect-text {
+    color: #b83b4d;
+}
+
+/* Category selector on the leaderboard page */
+.leaderboard-filter {
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+
+/* Simple profile statistic cards */
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 17px;
+    box-shadow: 0 6px 16px rgba(49, 43, 89, 0.07);
+}
+
+.stat-box span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.stat-box strong {
+    color: #312c68;
+    font-size: 22px;
+    word-break: break-word;
+}
+
+@media (max-width: 650px) {
+    .nav-content {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .nav-links {
+        gap: 0;
+    }
+
+    main {
+        margin-top: 24px;
+    }
+
+    .hero {
+        padding: 42px 20px;
+    }
+
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+}
+
+
+/* Player names on the leaderboard can be clicked to view public profile statistics. */
+.profile-link {
+    color: var(--purple-dark);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.profile-link:hover {
+    text-decoration: underline;
 }

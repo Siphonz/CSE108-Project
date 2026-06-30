@@ -3,12 +3,12 @@
 
 {% block content %}
 <div class="quiz-card">
-    <p><strong>{{ category.name }}</strong> | Question {{ question_number }} of 5 | Score: {{ score }}</p>
+    <p><strong>{{ category.name }}</strong> | Question {{ question_number }} of {{ total_questions }} | Score: {{ score }}</p>
     <p>Time left: <strong id="timer">15</strong> seconds</p>
 
     <h1>{{ question.question_text }}</h1>
 
-    <form id="quiz-form" method="POST" action="{{ url_for('answer') }}" data-correct="{{ question.correct_answer }}">
+    <form id="quiz-form" method="POST" action="{{ url_for('answer') }}">
         <!-- Hidden timer value to score for speed -->
         <input type="hidden" id="seconds-left" name="seconds_left" value="15">
         <input type="hidden" id="selected-answer" name="answer">
@@ -17,16 +17,8 @@
         <button type="submit" class="answer" name="answer" value="B">B. {{ question.option_b }}</button>
         <button type="submit" class="answer" name="answer" value="C">C. {{ question.option_c }}</button>
         <button type="submit" class="answer" name="answer" value="D">D. {{ question.option_d }}</button>
-
     </form>
-    <audio id="correctSFX">
-        <source src="{{ url_for('static', filename='sounds/correctSFX.mp3') }}">
-    </audio>
-    <audio id="incorrectSFX">
-        <source src="{{ url_for('static', filename='sounds/incorrectSFX.mp3') }}">
-    </audio>
 </div>
 
-<script src="{{ url_for('static', filename='js/timer.js') }}">
-</script>
+<script src="{{ url_for('static', filename='js/timer.js') }}"></script>
 {% endblock %}

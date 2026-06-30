@@ -10,3 +10,20 @@ A mixed pop-culture trivia web app
 - Faster correct answers earn more points
 - Leaderboard and score history
 - Admin account can add, edit, and delete questions
+
+## Profile Statistics
+
+The profile page now shows simple player statistics based on completed quiz attempts:
+
+- Quizzes played
+- Total score
+- Best score
+- Average score
+- Most-played category
+- Best Random Mix score
+
+
+
+## Public Player Profiles
+
+Logged-in users can click a player's username on the leaderboard to view that player's quiz statistics and quiz history. Passwords and admin settings are never shown on public profiles.

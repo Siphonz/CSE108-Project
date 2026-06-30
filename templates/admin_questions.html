@@ -1,40 +1,43 @@
-<!-- Admin-only page for viewing, editing, and deleting questions. -->
+<!-- Admin-only page for viewing, editing, and deleting questions by category. -->
 {% extends "base.html" %}
 
 {% block content %}
 <div class="card">
     <h1>Admin Question Manager</h1>
-    <p>Use this page to add, edit, or delete trivia questions and answers.</p>
+    <p>Questions are separated by category so they are easier to manage.</p>
 
     <a class="button" href="{{ url_for('admin_add_question') }}">Add New Question</a>
 </div>
 
-<div class="card">
-    {% if questions %}
-        <table>
-            <tr>
-                <th>Category</th>
-                <th>Question</th>
-                <th>Correct Answer</th>
-                <th>Actions</th>
-            </tr>
-            {% for question in questions %}
-                <tr>
-                    <td>{{ question.category.name }}</td>
-                    <td>{{ question.question_text }}</td>
-                    <td>{{ question.correct_answer }}</td>
-                    <td>
-                        <a class="small-button" href="{{ url_for('admin_edit_question', question_id=question.id) }}">Edit</a>
+{% for category in categories %}
+    <div class="card">
+        <h2>{{ category.name }}</h2>
+        <p>{{ questions_by_category[category.id]|length }} question(s) in this category.</p>
 
-                        <form class="delete-form" method="POST" action="{{ url_for('admin_delete_question', question_id=question.id) }}">
-                            <button class="small-button delete-button" type="submit" onclick="return confirm('Delete this question?')">Delete</button>
-                        </form>
-                    </td>
+        {% if questions_by_category[category.id] %}
+            <table>
+                <tr>
+                    <th>Question</th>
+                    <th>Correct Answer</th>
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <p>No questions have been added yet.</p>
-    {% endif %}
-</div>
+                {% for question in questions_by_category[category.id] %}
+                    <tr>
+                        <td>{{ question.question_text }}</td>
+                        <td>{{ question.correct_answer }}</td>
+                        <td>
+                            <a class="small-button" href="{{ url_for('admin_edit_question', question_id=question.id) }}">Edit</a>
+
+                            <form class="delete-form" method="POST" action="{{ url_for('admin_delete_question', question_id=question.id) }}">
+                                <button class="small-button delete-button" type="submit" onclick="return confirm('Delete this question?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No questions have been added to this category yet.</p>
+        {% endif %}
+    </div>
+{% endfor %}
 {% endblock %}

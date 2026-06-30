@@ -1,8 +1,48 @@
-<!-- Shows saved quiz attempts for the currently logged-in user -->
+<!-- Shows quiz statistics and saved attempts for the currently logged-in user -->
 {% extends "base.html" %}
 
 {% block content %}
-<h1>{{ current_user.username }}'s Profile</h1>
+<div class="page-heading">
+    <p class="eyebrow">Player Profile</p>
+    <h1>{{ profile_user.username }}'s Profile</h1>
+    <p>These statistics are based on completed quizzes.</p>
+    {% if profile_user.id != current_user.id %}
+        <a class="button secondary" href="{{ url_for('leaderboard') }}">Back to Leaderboard</a>
+    {% endif %}
+</div>
+
+<!-- Profile stats  -->
+<div class="profile-stats">
+    <div class="stat-box">
+        <span>Quizzes Played</span>
+        <strong>{{ total_quizzes }}</strong>
+    </div>
+
+    <div class="stat-box">
+        <span>Total Score</span>
+        <strong>{{ total_score }}</strong>
+    </div>
+
+    <div class="stat-box">
+        <span>Best Score</span>
+        <strong>{{ best_score }}</strong>
+    </div>
+
+    <div class="stat-box">
+        <span>Average Score</span>
+        <strong>{{ average_score }}</strong>
+    </div>
+
+    <div class="stat-box">
+        <span>Favorite Category</span>
+        <strong>{{ favorite_category }}</strong>
+    </div>
+
+    <div class="stat-box">
+        <span>Best Random Mix</span>
+        <strong>{{ random_mix_best }}</strong>
+    </div>
+</div>
 
 <div class="card">
     <h2>Quiz History</h2>
@@ -24,6 +64,7 @@
         </table>
     {% else %}
         <p>You have not played a quiz yet.</p>
+        <a class="button" href="{{ url_for('categories') }}">Play a Quiz</a>
     {% endif %}
 </div>
 {% endblock %}

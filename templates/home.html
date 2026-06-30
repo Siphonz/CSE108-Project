@@ -5,6 +5,9 @@
 <div class="hero">
     <h1>TriviaVerse</h1>
     <p>Mixed pop culture trivia for anime, gaming, movies, music, and internet culture.</p>
+    <div class="hero-tags">
+        <span>15 questions</span><span>Speed bonuses</span><span>Category leaderboards</span>
+    </div>
 
     {% if current_user.is_authenticated %}
         <a class="button" href="{{ url_for('categories') }}">Start Playing</a>
@@ -17,8 +20,8 @@
 <div class="card">
     <h2>How it works</h2>
     <ol>
-        <li>Choose a category.</li>
-        <li>Answer five questions.</li>
+        <li>Choose a category or try a Random Mix quiz.</li>
+        <li>Answer 15 questions.</li>
         <li>Get 100 points for each correct answer, Bonus points if you answer quicker.</li>
         <li>Save your score to the leaderboard.</li>
     </ol>

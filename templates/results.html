@@ -7,7 +7,11 @@
     <h2>Your Score: {{ score }}</h2>
     <p>Category: {{ category.name }}</p>
 
-    <a class="button" href="{{ url_for('start_quiz', category_id=category.id) }}">Play Again</a>
+    {% if is_random_quiz %}
+        <a class="button" href="{{ url_for('start_random_quiz') }}">Play Random Quiz Again</a>
+    {% else %}
+        <a class="button" href="{{ url_for('start_quiz', category_id=category.id) }}">Play Again</a>
+    {% endif %}
     <a class="button secondary" href="{{ url_for('leaderboard') }}">Leaderboard</a>
 </div>
 {% endblock %}

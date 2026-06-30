@@ -1,14 +1,27 @@
-<!-- Shows all categories from the database -->
+<!-- Shows the available trivia categories. -->
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Choose a Category</h1>
-<p>Every quiz has five random questions.</p>
+<div class="page-heading">
+    <p class="eyebrow">Pick your challenge</p>
+    <h1>Choose a Category</h1>
+    <p>Every quiz has 15 questions. Answer quickly to earn extra points.</p>
+</div>
 
 <div class="category-grid">
+    <div class="card category-card random-card">
+        <div class="category-icon">🎲</div>
+        <h2>Random Mix</h2>
+        <p>Get a surprise mix of questions from every TriviaVerse category.</p>
+        <a class="button" href="{{ url_for('start_random_quiz') }}">Start Random Quiz</a>
+    </div>
+
     {% for category in categories %}
-        <div class="card">
+        {% set detail = category_details.get(category.name, {}) %}
+        <div class="card category-card">
+            <div class="category-icon">{{ detail.get('icon', '❓') }}</div>
             <h2>{{ category.name }}</h2>
+            <p>{{ detail.get('description', 'Test your trivia knowledge.') }}</p>
             <a class="button" href="{{ url_for('start_quiz', category_id=category.id) }}">Start Quiz</a>
         </div>
     {% endfor %}

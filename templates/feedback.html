@@ -1,0 +1,31 @@
+<!-- Shows the player whether the previous answer was correct. -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card center">
+    {% if feedback.timed_out %}
+        <h1>Time's Up!</h1>
+        <p>The correct answer was <strong>{{ question.correct_answer }}. {{ correct_answer_text }}</strong>.</p>
+    {% elif feedback.is_correct %}
+        <h1 class="correct-text">Correct!</h1>
+        <p>You earned <strong>{{ feedback.points_earned }}</strong> points.</p>
+    {% else %}
+        <h1 class="incorrect-text">Incorrect</h1>
+        <p>The correct answer was <strong>{{ question.correct_answer }}. {{ correct_answer_text }}</strong>.</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('next_question') }}">
+        <button class="button" type="submit">Continue</button>
+    </form>
+</div>
+
+{% if feedback.is_correct %}
+    <audio id="feedback-sound" autoplay>
+        <source src="{{ url_for('static', filename='sounds/correctSFX.mp3') }}">
+    </audio>
+{% else %}
+    <audio id="feedback-sound" autoplay>
+        <source src="{{ url_for('static', filename='sounds/incorrectSFX.mp3') }}">
+    </audio>
+{% endif %}
+{% endblock %}

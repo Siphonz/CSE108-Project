@@ -14,6 +14,16 @@ from seed_data import add_sample_data
 
 app = Flask(__name__)
 
+CATEGORY_DETAILS = {
+    "Anime": {"icon": "🎌", "description": "From shonen heroes to Studio Ghibli favorites."},
+    "Video Games": {"icon": "🎮", "description": "Games, characters, consoles, and classic gaming facts."},
+    "Movies & TV": {"icon": "🎬", "description": "Popular movies, shows, characters, and memorable moments."},
+    "Music": {"icon": "🎵", "description": "Artists, songs, instruments, albums, and music basics."},
+    "Internet Culture": {"icon": "💻", "description": "Memes, platforms, online terms, and digital life."},
+}
+
+RANDOM_CATEGORY_NAME = "Random Mix"
+
 app.config["SECRET_KEY"] = "change-this-before-deployment"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trivia.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -129,30 +139,59 @@ def logout():
 @app.route("/categories")
 @login_required
 def categories():
-    all_categories = Category.query.order_by(Category.name).all()
-    return render_template("categories.html", categories=all_categories)
+    # Do not show the saved Random Mix category as a normal category card.
+    all_categories = Category.query.filter(Category.name != RANDOM_CATEGORY_NAME).order_by(Category.name).all()
+    return render_template(
+        "categories.html",
+        categories=all_categories,
+        category_details=CATEGORY_DETAILS,
+    )
 
 
-#Starts a new quiz from one category
+def save_quiz_to_session(selected_questions, category_id, is_random_quiz=False):
+    # Store the selected question IDs and the score information for the current quiz.
+    session["question_ids"] = [question.id for question in selected_questions]
+    session["question_index"] = 0
+    session["quiz_score"] = 0
+    session["category_id"] = category_id
+    session["is_random_quiz"] = is_random_quiz
+
+
+# Starts a new quiz from one category.
 @app.route("/start/<int:category_id>")
 @login_required
 def start_quiz(category_id):
     category = db.session.get(Category, category_id)
     questions = Question.query.filter_by(category_id=category_id).all()
 
-    # The quiz needs at least five questions to work
-    if not category or len(questions) < 5:
-        flash("This category does not have enough questions.")
+    # The quiz needs at least 15 questions to work.
+    if not category or category.name == RANDOM_CATEGORY_NAME or len(questions) < 15:
+        flash("This category does not have enough questions for a 15-question quiz.")
         return redirect(url_for("categories"))
 
-    # Choose five random questions from this category
-    selected = sample(questions, 5)
+    # Choose 15 random questions from this category.
+    selected = sample(questions, 15)
+    save_quiz_to_session(selected, category.id)
 
-    #Store IDs of quiz information
-    session["question_ids"] = [question.id for question in selected]
-    session["question_index"] = 0
-    session["quiz_score"] = 0
-    session["category_id"] = category.id
+    return redirect(url_for("quiz"))
+
+
+# Starts a mixed quiz using questions from every regular category.
+@app.route("/start-random")
+@login_required
+def start_random_quiz():
+    random_category = Category.query.filter_by(name=RANDOM_CATEGORY_NAME).first()
+    regular_categories = Category.query.filter(Category.name != RANDOM_CATEGORY_NAME).all()
+    regular_category_ids = [category.id for category in regular_categories]
+    questions = Question.query.filter(Question.category_id.in_(regular_category_ids)).all()
+
+    if not random_category or len(questions) < 15:
+        flash("There are not enough questions for a random quiz yet.")
+        return redirect(url_for("categories"))
+
+    # Pick from all regular categories, not just one topic.
+    selected = sample(questions, 15)
+    save_quiz_to_session(selected, random_category.id, is_random_quiz=True)
 
     return redirect(url_for("quiz"))
 
@@ -181,6 +220,7 @@ def quiz():
         question=question,
         category=category,
         question_number=question_index + 1,
+        total_questions=len(question_ids),
         score=session["quiz_score"],
     )
 
@@ -213,12 +253,51 @@ def answer():
 
     #Wrong answers and timeouts get 0 points.
     #Correct answers get 100 base points plus 5 points for every second left.
-    if chosen_answer == question.correct_answer:
+    is_correct = chosen_answer == question.correct_answer
+    points_earned = 0
+
+    if is_correct:
         points_earned = 100 + (seconds_left * 5)
         session["quiz_score"] += points_earned
 
-    #Moves to the next question
+    # Save answer feedback so the player can see whether the answer was correct.
+    session["answer_feedback"] = {
+        "question_id": question.id,
+        "chosen_answer": chosen_answer,
+        "is_correct": is_correct,
+        "points_earned": points_earned,
+        "timed_out": chosen_answer == "",
+    }
+
+    #Move to the feedback page before showing the next question.
     session["question_index"] += 1
+    return redirect(url_for("answer_feedback"))
+
+
+# Show whether the last answer was correct before continuing the quiz.
+@app.route("/feedback")
+@login_required
+def answer_feedback():
+    feedback = session.get("answer_feedback")
+
+    if not feedback:
+        return redirect(url_for("quiz"))
+
+    question = db.session.get(Question, feedback["question_id"])
+    correct_answer_text = getattr(question, "option_" + question.correct_answer.lower())
+    return render_template(
+        "feedback.html",
+        feedback=feedback,
+        question=question,
+        correct_answer_text=correct_answer_text,
+    )
+
+
+# Continue from the feedback page to the next question.
+@app.route("/next-question", methods=["POST"])
+@login_required
+def next_question():
+    session.pop("answer_feedback", None)
     return redirect(url_for("quiz"))
 
 
@@ -242,37 +321,123 @@ def finish_quiz():
     db.session.commit()
 
     category = db.session.get(Category, category_id)
+    is_random_quiz = session.get("is_random_quiz", False)
     clear_quiz_session()
-    return render_template("results.html", score=score, category=category)
+    return render_template(
+        "results.html",
+        score=score,
+        category=category,
+        is_random_quiz=is_random_quiz,
+    )
 
 
-#Show past quiz scores for the logged-in player
+# Build the statistics used on both a player's own profile and public player profiles.
+def get_profile_data(profile_user):
+    # Get this player's newest quiz attempts first.
+    attempts = Attempt.query.filter_by(user_id=profile_user.id).order_by(Attempt.completed_at.desc()).all()
+
+    # Simple profile statistics calculated from the saved attempts.
+    total_quizzes = len(attempts)
+    total_score = sum(attempt.score for attempt in attempts)
+    best_score = max((attempt.score for attempt in attempts), default=0)
+    average_score = round(total_score / total_quizzes) if total_quizzes else 0
+
+    # Count how often the player has completed each category.
+    category_counts = {}
+    for attempt in attempts:
+        category_name = attempt.category.name
+        category_counts[category_name] = category_counts.get(category_name, 0) + 1
+
+    # The most played category becomes the player's favorite category.
+    favorite_category = "No quizzes yet"
+    if category_counts:
+        favorite_category = max(category_counts, key=category_counts.get)
+
+    # Find the player's best Random Mix score if they have played that category.
+    random_mix_best = 0
+    for attempt in attempts:
+        if attempt.category.name == RANDOM_CATEGORY_NAME and attempt.score > random_mix_best:
+            random_mix_best = attempt.score
+
+    return {
+        "attempts": attempts,
+        "total_quizzes": total_quizzes,
+        "total_score": total_score,
+        "best_score": best_score,
+        "average_score": average_score,
+        "favorite_category": favorite_category,
+        "random_mix_best": random_mix_best,
+    }
+
+
+# Show saved quiz scores and simple statistics for the logged-in player.
 @app.route("/profile")
 @login_required
 def profile():
-    attempts = Attempt.query.filter_by(user_id=current_user.id).order_by(Attempt.completed_at.desc()).all()
-    return render_template("profile.html", attempts=attempts)
+    profile_data = get_profile_data(current_user)
+    return render_template("profile.html", profile_user=current_user, **profile_data)
 
 
-#Show the top ten scores for all users
+# Lets logged-in players view another player's public quiz statistics.
+@app.route("/profile/<username>")
+@login_required
+def public_profile(username):
+    profile_user = User.query.filter_by(username=username).first()
+
+    if not profile_user:
+        abort(404)
+
+    # Send a player back to their normal profile page when viewing their own name.
+    if profile_user.id == current_user.id:
+        return redirect(url_for("profile"))
+
+    profile_data = get_profile_data(profile_user)
+    return render_template("profile.html", profile_user=profile_user, **profile_data)
+
+
+#Show the top ten scores for all users or one selected category.
 @app.route("/leaderboard")
 def leaderboard():
-    attempts = Attempt.query.order_by(Attempt.score.desc()).limit(10).all()
-    return render_template("leaderboard.html", attempts=attempts)
+    all_categories = Category.query.order_by(Category.name).all()
+    selected_category_id = request.args.get("category_id", type=int)
+    selected_category = None
+
+    query = Attempt.query
+
+    if selected_category_id:
+        selected_category = db.session.get(Category, selected_category_id)
+
+        if selected_category:
+            query = query.filter_by(category_id=selected_category.id)
+        else:
+            selected_category_id = None
+
+    attempts = query.order_by(Attempt.score.desc()).limit(10).all()
+    return render_template(
+        "leaderboard.html",
+        attempts=attempts,
+        categories=all_categories,
+        selected_category_id=selected_category_id,
+        selected_category=selected_category,
+    )
 
 # Admin question pages
 # -----------------------
 
-# List every question so the admin can edit or delete them.
+# List questions in separate category sections so the admin can manage one category at a time.
 @app.route("/admin")
 @admin_required
 def admin_questions():
-    all_questions = Question.query.order_by(Question.category_id, Question.id).all()
     all_categories = Category.query.order_by(Category.name).all()
+    questions_by_category = {}
+
+    for category in all_categories:
+        questions_by_category[category.id] = Question.query.filter_by(category_id=category.id).order_by(Question.id).all()
+
     return render_template(
         "admin_questions.html",
-        questions=all_questions,
         categories=all_categories,
+        questions_by_category=questions_by_category,
     )
 
 # Adds a new trivia question.
@@ -382,6 +547,8 @@ def clear_quiz_session():
     session.pop("question_index", None)
     session.pop("quiz_score", None)
     session.pop("category_id", None)
+    session.pop("is_random_quiz", None)
+    session.pop("answer_feedback", None)
 
 
 def create_admin_account():
