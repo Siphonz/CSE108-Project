@@ -13,8 +13,7 @@ A mixed pop-culture trivia web app
 
 ## Profile Statistics
 
-The profile page now shows simple player statistics based on completed quiz attempts:
-
+The profile page now shows player statistics based on completed quiz attempts:
 - Quizzes played
 - Total score
 - Best score
@@ -26,4 +25,4 @@ The profile page now shows simple player statistics based on completed quiz atte
 
 ## Public Player Profiles
 
-Logged-in users can click a player's username on the leaderboard to view that player's quiz statistics and quiz history. Passwords and admin settings are never shown on public profiles.
+Logged-in users can click a player's username on the leaderboard to view that player's quiz statistics and quiz history
